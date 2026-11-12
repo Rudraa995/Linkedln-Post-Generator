@@ -6,11 +6,12 @@ export const runtime = 'nodejs'
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params
     const posts = getPosts()
-    const post = posts.find((p) => p.id === params.id)
+    const post = posts.find((p) => p.id === id)
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
@@ -25,11 +26,12 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params
     const body = await req.json()
-    const updated = updatePost(params.id, body)
+    const updated = updatePost(id, body)
     if (!updated) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
@@ -44,10 +46,11 @@ export async function PUT(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const deleted = deletePost(params.id)
+    const { id } = await params
+    const deleted = deletePost(id)
     if (!deleted) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }

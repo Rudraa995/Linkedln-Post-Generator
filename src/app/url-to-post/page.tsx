@@ -143,7 +143,7 @@ export default function UrlToPostPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <SplitText text="URL to Post" tag="h1" className="text-3xl font-bold tracking-tight" effect="skew" trigger="load" />
+          <SplitText text="URL to Post" tag="h1" className="text-2xl font-bold tracking-tight sm:text-3xl" effect="skew" trigger="load" />
           <ShinyText text="Convert a GitHub repository, blog article, or documentation page into a LinkedIn post. AI analyzes the content and creates a shareable post." className="text-muted-foreground" speed={3} />
         </div>
       </div>

@@ -89,14 +89,14 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="relative overflow-hidden rounded-xl p-6">
+      <div className="relative overflow-hidden rounded-xl p-4 sm:p-6">
         <Aurora className="absolute inset-0 -z-10 opacity-40" colorStops={['#0077b5', '#005887', '#eef3f8']} />
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <SplitText
             text={`Welcome back${profile ? `, ${profile.fullName.split(' ')[0]}` : ''}`}
             tag="h1"
-            className="text-3xl font-bold tracking-tight"
+            className="text-2xl font-bold tracking-tight sm:text-3xl"
             effect="wave"
             trigger="load"
           />

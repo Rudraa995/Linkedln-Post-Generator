@@ -96,7 +96,7 @@ export default function CreatePostPage() {
       {step === 'form' && (
         <>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <SplitText text="Create Post" tag="h1" className="text-3xl font-bold tracking-tight" effect="pop" trigger="load" />
+            <SplitText text="Create Post" tag="h1" className="text-2xl font-bold tracking-tight sm:text-3xl" effect="pop" trigger="load" />
             <div className="flex items-center gap-2">
               <ShinyText text="AI-powered generation" className="text-sm text-muted-foreground" speed={3} />
             </div>

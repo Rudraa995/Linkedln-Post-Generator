@@ -5,7 +5,7 @@ import { Sun, Moon, Menu, Bell, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-export default function Header() {
+export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const [darkMode, setDarkMode] = React.useState(false)
 
   React.useEffect(() => {
@@ -30,10 +30,8 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-background bg-background/80 backdrop-blur px-6">
       <button
-        onClick={() => {
-          // Mobile toggle handled by layout CSS
-        }}
-        className="-mr-2 p-2 text-muted-foreground hover:text-foreground"
+        onClick={onMenuClick}
+        className="-mr-2 p-2 text-muted-foreground hover:text-foreground lg:hidden"
         aria-label="Open main menu"
       >
         <Menu className="w-5 h-5" />

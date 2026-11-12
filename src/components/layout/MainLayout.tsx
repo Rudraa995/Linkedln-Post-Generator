@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import Sidebar from '@/components/layout/Sidebar'
@@ -8,71 +8,50 @@ import Header from '@/components/layout/Header'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const pathname = usePathname()
-  const router = useRouter()
 
   useEffect(() => {
-    // Close sidebar on route change in mobile
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      setSidebarOpen(false)
+    const update = () => {
+      const mobile = window.innerWidth < 1024
+      setIsMobile(mobile)
+      if (!mobile) setSidebarOpen(false)
     }
-  }, [pathname])
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  useEffect(() => {
+    if (isMobile) setSidebarOpen(false)
+  }, [pathname, isMobile])
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header />
+      <Header onMenuClick={() => setSidebarOpen((v) => !v)} />
 
       <div className="flex">
-        {/* Sidebar - Desktop always visible, Mobile slide-over */}
+        {/* Sidebar */}
         <aside
           className={cn(
-            'fixed left-0 top-[4rem] z-20 h-full w-64 border-r border-border bg-sidebar text-sidebar-foreground transform transition-transform duration-300',
+            'fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r border-border bg-sidebar text-sidebar-foreground transition-transform duration-200 lg:static lg:top-0 lg:h-screen lg:translate-x-0',
             sidebarOpen ? 'translate-x-0' : '-translate-x-full',
-            'sm:relative sm:translate-x-0 sm:static sm:z-auto sm:transform-none',
           )}
         >
-          <Sidebar />
-          {typeof window !== 'undefined' && window.innerWidth < 1024 && (
-            <div className="absolute top-0 right-0 p-2 z-50">
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="text-sidebar-foreground hover:text-sidebar-primary"
-                aria-label="Close sidebar"
-              >
-                <span className="sr-only">Close sidebar</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M18 6L6 18" />
-                  <path d="M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          )}
+          <Sidebar onNavigate={() => isMobile && setSidebarOpen(false)} />
         </aside>
 
         {/* Mobile overlay */}
-        {sidebarOpen && typeof window !== 'undefined' && window.innerWidth < 1024 && (
+        {sidebarOpen && isMobile && (
           <div
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
         {/* Main content */}
-        <main
-          className="flex-1 pt-16 sm:pt-0 pb-8 px-6 sm:px-8 lg:px-12"
-          style={{ marginLeft: typeof window !== 'undefined' ? window.innerWidth >= 1024 ? 256 : 0 : 0 }}
-        >
-          {children}
+        <main className="flex-1 min-w-0 px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-7xl">{children}</div>
         </main>
       </div>
     </div>

@@ -116,7 +116,7 @@ export default function ImageStudioPage() {
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <SplitText text="Image Studio" tag="h1" className="text-3xl font-bold tracking-tight" effect="blur" trigger="load" />
+          <SplitText text="Image Studio" tag="h1" className="text-2xl font-bold tracking-tight sm:text-3xl" effect="blur" trigger="load" />
           <ShinyText text="Generate AI images for your LinkedIn posts. Choose a style and dimension that matches your content." className="text-muted-foreground" speed={3} />
         </div>
       </div>

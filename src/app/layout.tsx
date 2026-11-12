@@ -1,9 +1,6 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import MainLayout from '@/components/layout/MainLayout'
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
   title: 'LinkedIn Content Creator',
@@ -17,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.variable} h-full bg-background text-foreground`}>
+      <body className="h-full bg-background text-foreground font-sans">
         <MainLayout>{children}</MainLayout>
       </body>
     </html>
