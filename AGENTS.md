@@ -1,48 +1,35 @@
 # AGENTS.md
 
-## Project overview
-AI-Powered LinkedIn Content Creator. Full-stack app: Next.js 14 frontend + Python FastAPI backend, using OpenRouter for AI text/image generation.
-
-## Repository layout
-- `src/` — Next.js App Router (TypeScript, Tailwind). Pages and components.
-- `src/app/api/*` — Next.js API routes (server-side, uses `src/services/ai/openrouter.ts`).
-- `src/services/api/*` — Client services that call the FastAPI backend (`NEXT_PUBLIC_API_BASE_URL`).
-- `backend/` — FastAPI app (`app/main.py`). Routers in `app/routers/`, services in `app/services/`.
+## Project
+AI-Powered LinkedIn Content Creator. Next.js 16 (App Router, React 19, Tailwind 3) frontend + Python FastAPI backend. AI via OpenRouter. Storage is localStorage (temporary).
 
 ## Commands
-### Frontend
-- Install: `npm install`
-- Dev: `npm run dev` (port 3000)
-- Build: `npm run build`
-- Lint: `npm run lint`
-- Start (prod): `npm start`
+Frontend:
+- `npm install`
+- `npm run dev` (port 3000, Turbopack)
+- `npm run build`
+- `npm run lint`
 
-### Backend
-- Install: `cd backend && pip install -r requirements.txt`
-- Run: `cd backend && uvicorn app.main:app --reload --port 8000`
-- API docs: http://localhost:8000/docs
+Backend:
+- `cd backend && pip install -r requirements.txt`
+- `cd backend && uvicorn app.main:app --reload --port 8000`
+- Docs: http://localhost:8000/docs
 
 ## Environment
-- Root `.env` (from `.env.example`): `OPENROUTER_API_KEY`, `NEXT_PUBLIC_*`.
-- `backend/.env` (from `backend/.env.example`): `OPENROUTER_API_KEY`, `IMAGE_GENERATION_API_KEY`, `FRONTEND_URL`.
-- Never commit `.env` files.
+- Root `.env` from `.env.example`: `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000` (frontend calls FastAPI)
+- `backend/.env` from `backend/.env.example`: `OPENROUTER_API_KEY` required; `FRONTEND_URL=http://localhost:3000`
 
-## Conventions
-- TypeScript strict mode; path alias `@/*` → `src/*`.
-- Frontend calls FastAPI backend for most features; Next.js API routes are an alternate server-side path.
-- Storage is localStorage (temporary).
-- Images remote patterns allowed for all https hosts in `next.config.js`.
+## Architecture
+- `src/app/*` pages; `src/app/api/*` Next.js API routes (alternate path, uses `src/services/ai/openrouter.ts`)
+- `src/services/api/*` client calls FastAPI backend
+- `backend/app/main.py` FastAPI entry; routers in `backend/app/routers/`
+- Path alias `@/*` -> `src/*`
 
-## Notes
-- `.next/`, `node_modules/`, `__pycache__/`, `.env` are gitignored.
-- Nested `Linkedln-Post-Generator/` is a separate (legacy) repo and is gitignored.
-
-<!-- BEGIN:nextjs-agent-rules -->
-
-## This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
+## Quirks
+- Next.js 16: dynamic route `params` is a `Promise`; await it (see `src/app/api/posts/[id]/route.ts`).
+- Tailwind 3 with `tailwind.config.js`; global styles in `src/app/globals.css` (imports Google Fonts CDN).
+- UI uses shadcn-style components in `src/components/ui` plus React Bits in `src/components/*`.
+- `next.config.js` allows all https remote image hosts.
+- MainLayout wraps children in `max-w-7xl`; sidebar is `w-64`.
+- Storage is client-side localStorage; do not assume a DB.
+- Docker removed; run services manually.

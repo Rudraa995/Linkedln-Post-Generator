@@ -34,14 +34,13 @@ const NAV_ITEMS: NavItem[] = [
   { title: 'Settings', href: '/settings', icon: Settings },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
 
   return (
-    <aside className="fixed left-0 top-0 z-20 h-full w-64 border-r border-border bg-sidebar text-sidebar-foreground">
-      <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col">
         {/* Brand */}
-        <div className="flex items-center gap-2 px-6 py-5">
+        <div className="flex items-center gap-3 px-5 py-4">
           <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs">
             LC
           </div>
@@ -49,7 +48,7 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-3 space-y-1">
+        <nav className="flex-1 px-3 py-2 space-y-1">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
@@ -57,6 +56,7 @@ export default function Sidebar() {
               <Link
                 key={item.title}
                 href={item.href}
+                onClick={onNavigate}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                   isActive
@@ -89,6 +89,5 @@ export default function Sidebar() {
           </Button>
         </div>
       </div>
-    </aside>
   )
 }

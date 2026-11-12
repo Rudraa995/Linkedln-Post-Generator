@@ -38,7 +38,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             sidebarOpen ? 'translate-x-0' : '-translate-x-full',
           )}
         >
-          <Sidebar onNavigate={() => isMobile && setSidebarOpen(false)} />
+          <Sidebar onNavigate={() => { if (isMobile) setSidebarOpen(false) }} />
         </aside>
 
         {/* Mobile overlay */}

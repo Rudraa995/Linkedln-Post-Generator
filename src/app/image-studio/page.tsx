@@ -146,21 +146,22 @@ export default function ImageStudioPage() {
                   {STYLE_OPTIONS.map((s) => (
                     <label
                       key={s.value}
-                      className={`cursor-pointer p-3 rounded-lg border transition-colors ${
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
                         style === s.value
-                          ? 'border-primary bg-primary/10'
-                          : 'border-input hover:bg-accent'
+                          ? 'border-primary bg-primary/10 shadow-sm'
+                          : 'border-input hover:border-primary/30 hover:bg-accent'
                       }`}
                     >
                       <input
                         type="radio"
                         checked={style === s.value}
                         onChange={() => setStyle(s.value)}
-                        className="sr-only"
-                        readOnly
+                        className="mt-1 h-4 w-4 accent-primary"
                       />
-                      <div className="font-medium text-foreground">{s.label}</div>
-                      <div className="text-xs text-muted-foreground">{s.description}</div>
+                      <div className="min-w-0">
+                        <div className="font-medium text-foreground">{s.label}</div>
+                        <div className="text-xs text-muted-foreground">{s.description}</div>
+                      </div>
                     </label>
                   ))}
                 </div>
