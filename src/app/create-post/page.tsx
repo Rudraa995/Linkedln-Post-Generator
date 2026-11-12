@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import PostEditor from '@/components/post-editor/PostEditor'
 import LinkedInPreview from '@/components/post-editor/LinkedInPreview'
+import { getErrorMessage } from '@/lib/utils'
 import { savePost, getPosts, getProfile } from '@/lib/storage'
 import { generatePost } from '@/services/api/postApi'
 import { type LinkedInPost, type PostType, type Tone, type Length, type Language, type EmojiPreference, type TargetAudience } from '@/types'
@@ -53,7 +54,7 @@ export default function CreatePostPage() {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [generated, setGenerated] = useState<any>(null)
+  const [generated, setGenerated] = useState<LinkedInPost | null>(null)
 
   const handleGenerate = useCallback(async () => {
     if (!form.topic.trim()) {
@@ -64,12 +65,12 @@ export default function CreatePostPage() {
     setError(null)
     try {
       // Read profile from client-side localStorage
-      const profile = form.useProfileContext ? getProfile() : undefined
+      const profile = form.useProfileContext ? (getProfile() ?? undefined) : undefined
       const post = await generatePost({ ...form, profile })
       setGenerated(post)
       setStep('editor')
-    } catch (err: any) {
-      setError(err.message || 'Failed to generate post. Please try again.')
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || 'Failed to generate post. Please try again.')
     } finally {
       setLoading(false)
     }

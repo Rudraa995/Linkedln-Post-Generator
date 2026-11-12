@@ -9,7 +9,7 @@ export interface GenerateImageParams {
   dimension: string
 }
 
-export async function generateImage(params: GenerateImageParams): Promise<any> {
+export async function generateImage(params: GenerateImageParams): Promise<{ imageUrl: string; prompt: string }> {
   const res = await fetch(`${API_BASE_URL}/api/generate-image`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -19,5 +19,5 @@ export async function generateImage(params: GenerateImageParams): Promise<any> {
   if (!res.ok || !data.success) {
     throw new Error(data.detail || data.error || 'Failed to generate image')
   }
-  return data
+  return data as { imageUrl: string; prompt: string }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getErrorMessage } from '@/lib/utils'
 import { regeneratePostSection } from '@/services/ai/openrouter'
 
 export const runtime = 'nodejs'
@@ -16,9 +17,9 @@ export async function POST(req: NextRequest) {
 
     const result = await regeneratePostSection({ content, section, context })
     return NextResponse.json({ success: true, [section]: result })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || 'Failed to regenerate section' },
+      { error: getErrorMessage(error) || 'Failed to regenerate section' },
       { status: 500 },
     )
   }

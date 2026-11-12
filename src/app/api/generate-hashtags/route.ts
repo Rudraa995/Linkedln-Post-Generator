@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getErrorMessage } from '@/lib/utils'
 import { generateHashtags } from '@/services/ai/openrouter'
 
 export const runtime = 'nodejs'
@@ -13,9 +14,9 @@ export async function POST(req: NextRequest) {
 
     const hashtags = await generateHashtags(topic, content || '', count || 5)
     return NextResponse.json({ success: true, hashtags })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || 'Failed to generate hashtags' },
+      { error: getErrorMessage(error) || 'Failed to generate hashtags' },
       { status: 500 },
     )
   }

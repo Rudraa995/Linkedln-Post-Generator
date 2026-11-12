@@ -19,7 +19,7 @@ import {
   deleteCalendarEvent,
   getPosts,
 } from '@/lib/storage'
-import { type CalendarEvent, type PostStatus } from '@/types'
+import { type CalendarEvent, type PostStatus, type LinkedInPost } from '@/types'
 import { formatDate } from '@/lib/utils'
 
 const STATUS_COLORS: Record<PostStatus, string> = {
@@ -336,7 +336,7 @@ function EventEditor({
   onClose,
 }: {
   event: CalendarEvent
-  posts: any[]
+  posts: LinkedInPost[]
   onSave: (e: CalendarEvent) => void
   onDelete: (id: string) => void
   onClose: () => void

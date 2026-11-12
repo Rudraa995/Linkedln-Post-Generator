@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getErrorMessage } from '@/lib/utils'
 import { getPosts, updatePost, deletePost } from '@/lib/storage'
 
 export const runtime = 'nodejs'
@@ -14,9 +15,9 @@ export async function GET(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
     return NextResponse.json({ success: true, post })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch post' },
+      { error: getErrorMessage(error) || 'Failed to fetch post' },
       { status: 500 },
     )
   }
@@ -33,9 +34,9 @@ export async function PUT(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
     return NextResponse.json({ success: true, post: updated })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || 'Failed to update post' },
+      { error: getErrorMessage(error) || 'Failed to update post' },
       { status: 500 },
     )
   }
@@ -51,9 +52,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || 'Failed to delete post' },
+      { error: getErrorMessage(error) || 'Failed to delete post' },
       { status: 500 },
     )
   }

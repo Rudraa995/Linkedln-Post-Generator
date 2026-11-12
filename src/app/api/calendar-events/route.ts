@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { generateId, getErrorMessage } from '@/lib/utils'
 import {
   getCalendarEvents,
   saveCalendarEvent,
   deleteCalendarEvent,
 } from '@/lib/storage'
-import { generateId } from '@/lib/utils'
 
 export const runtime = 'nodejs'
 
@@ -12,9 +12,9 @@ export async function GET() {
   try {
     const events = getCalendarEvents()
     return NextResponse.json({ success: true, events })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch calendar events' },
+      { error: getErrorMessage(error) || 'Failed to fetch calendar events' },
       { status: 500 },
     )
   }
@@ -51,9 +51,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, event })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || 'Failed to create calendar event' },
+      { error: getErrorMessage(error) || 'Failed to create calendar event' },
       { status: 500 },
     )
   }
@@ -74,9 +74,9 @@ export async function DELETE(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || 'Failed to delete calendar event' },
+      { error: getErrorMessage(error) || 'Failed to delete calendar event' },
       { status: 500 },
     )
   }

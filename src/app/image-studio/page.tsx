@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { generateImage } from '@/services/api/imageApi'
+import { getErrorMessage } from '@/lib/utils'
 
 type ImageStyle =
   | 'professional-banner'
@@ -81,8 +82,8 @@ export default function ImageStudioPage() {
       const data = await generateImage({ prompt: prompt.trim(), style, dimension })
       setImageUrl(data.imageUrl)
       setUsedPrompt(data.prompt)
-    } catch (err: any) {
-      setError(err.message || 'Failed to generate image.')
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || 'Failed to generate image.')
     } finally {
       setLoading(false)
     }

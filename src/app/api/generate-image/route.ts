@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getErrorMessage } from '@/lib/utils'
 import { generateImage, isImageGenerationConfigured } from '@/services/image/provider'
 
 export const runtime = 'nodejs'
@@ -29,10 +30,10 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json({ success: true, ...result })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[generate-image] Error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to generate image.' },
+      { error: getErrorMessage(error) || 'Failed to generate image.' },
       { status: 500 },
     )
   }

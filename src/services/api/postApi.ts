@@ -1,7 +1,7 @@
 /**
  * Post API Service - calls Python FastAPI backend
  */
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
+import type { UserProfile, LinkedInPost, AnalyzeUrlResponse } from '@/types'
 
 export interface GeneratePostParams {
   topic: string
@@ -13,10 +13,10 @@ export interface GeneratePostParams {
   emojiPreference: string
   hashtagsEnabled: boolean
   useProfileContext: boolean
-  profile?: any
+  profile?: UserProfile
 }
 
-export async function generatePost(params: GeneratePostParams): Promise<any> {
+export async function generatePost(params: GeneratePostParams): Promise<LinkedInPost> {
   const res = await fetch(`${API_BASE_URL}/api/generate-post`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -29,7 +29,16 @@ export async function generatePost(params: GeneratePostParams): Promise<any> {
   return data.post
 }
 
-export async function generatePostFromUrl(params: any): Promise<any> {
+export interface GeneratedPostFromUrl {
+  hook: string
+  mainContent: string
+  conclusion: string
+  hashtags: string[]
+  cta: string
+  fullContent: string
+}
+
+export async function generatePostFromUrl(params: Record<string, unknown>): Promise<GeneratedPostFromUrl> {
   const res = await fetch(`${API_BASE_URL}/api/generate-post-from-url`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -42,7 +51,7 @@ export async function generatePostFromUrl(params: any): Promise<any> {
   return data.post
 }
 
-export async function analyzeUrl(url: string): Promise<any> {
+export async function analyzeUrl(url: string): Promise<AnalyzeUrlResponse> {
   const res = await fetch(`${API_BASE_URL}/api/analyze-url`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -52,7 +61,7 @@ export async function analyzeUrl(url: string): Promise<any> {
   if (!res.ok || !data.success) {
     throw new Error(data.detail || data.error || 'Failed to analyze URL')
   }
-  return data.content
+  return data.content as AnalyzeUrlResponse
 }
 
 export async function rewritePost(content: string, action: string, tone?: string): Promise<string> {
@@ -68,7 +77,11 @@ export async function rewritePost(content: string, action: string, tone?: string
   return data.content
 }
 
-export async function regenerateSection(content: string, section: string, context: any): Promise<any> {
+export async function regenerateSection(
+  content: string,
+  section: string,
+  context: { topic: string; tone: string; length: string; language: string },
+): Promise<unknown> {
   const res = await fetch(`${API_BASE_URL}/api/regenerate-section`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

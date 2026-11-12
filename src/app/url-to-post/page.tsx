@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { formatDateTime } from '@/lib/utils'
+import { formatDateTime, getErrorMessage } from '@/lib/utils'
 import { analyzeUrl, generatePostFromUrl } from '@/services/api/postApi'
+import type { AnalyzeUrlResponse, LinkedInPost } from '@/types'
 
 type Step = 'input' | 'analyzing' | 'extracted' | 'generating' | 'result' | 'error'
 
@@ -40,9 +41,9 @@ export default function UrlToPostPage() {
   const [step, setStep] = useState<Step>('input')
   const [url, setUrl] = useState('')
   const [manualContent, setManualContent] = useState('')
-  const [extracted, setExtracted] = useState<any>(null)
+  const [extracted, setExtracted] = useState<AnalyzeUrlResponse | null>(null)
   const [form, setForm] = useState<FormValues>(DEFAULT_FORM)
-  const [generated, setGenerated] = useState<any>(null)
+  const [generated, setGenerated] = useState<LinkedInPost | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -64,8 +65,8 @@ export default function UrlToPostPage() {
         topic: content.title || prev.topic,
       }))
       setStep('extracted')
-    } catch (err: any) {
-      setError(err.message || 'Failed to analyze URL.')
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || 'Failed to analyze URL.')
       setStep('error')
     } finally {
       setLoading(false)
@@ -104,8 +105,8 @@ export default function UrlToPostPage() {
       })
       setGenerated(post)
       setStep('result')
-    } catch (err: any) {
-      setError(err.message || 'Failed to generate post.')
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || 'Failed to generate post.')
       setStep('error')
     } finally {
       setLoading(false)

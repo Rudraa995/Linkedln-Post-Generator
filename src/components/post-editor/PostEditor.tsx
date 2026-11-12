@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge'
 import LinkedInPreview from '@/components/post-editor/LinkedInPreview'
 import { getPosts, savePost, deletePost, updatePost } from '@/lib/storage'
+import { getErrorMessage } from '@/lib/utils'
 import { rewritePost, regenerateSection, generateHashtags } from '@/services/api/postApi'
 import { type LinkedInPost } from '@/types'
 
@@ -134,8 +135,8 @@ export default function PostEditor({
       const rewritten = await rewritePost(content, action, tone)
       setContent(rewritten)
       setSaved(false)
-    } catch (err: any) {
-      alert(err.message || 'AI rewrite failed. Please try again.')
+    } catch (err: unknown) {
+      alert(getErrorMessage(err) || 'AI rewrite failed. Please try again.')
     } finally {
       setActionLoading(null)
     }
@@ -170,8 +171,8 @@ export default function PostEditor({
       setPost((prev) => prev ? { ...prev, [section]: data[section], updatedAt: new Date().toISOString() } : prev)
       setContent(newContent)
       setSaved(false)
-    } catch (err: any) {
-      alert(err.message || 'Section regeneration failed. Please try again.')
+    } catch (err: unknown) {
+      alert(getErrorMessage(err) || 'Section regeneration failed. Please try again.')
     } finally {
       setSectionLoading(null)
     }

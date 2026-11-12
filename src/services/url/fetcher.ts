@@ -143,16 +143,16 @@ export async function fetchAndExtractContent(
       sourceUrl: finalUrl,
       extractedAt: new Date().toISOString(),
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     clearTimeout(timeoutId)
 
-    if (error.name === 'AbortError') {
+    if (error instanceof Error && error.name === 'AbortError') {
       throw new Error(
         'The request timed out. The server may be slow or unreachable.',
       )
     }
 
-    if (error.message && typeof error.message === 'string') {
+    if (error instanceof Error && error.message) {
       throw error
     }
 

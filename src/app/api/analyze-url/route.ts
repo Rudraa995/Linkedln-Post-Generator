@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getErrorMessage } from '@/lib/utils'
 import { fetchAndExtractContent } from '@/services/url/fetcher'
 
 export const runtime = 'nodejs'
@@ -20,12 +21,12 @@ export async function POST(req: NextRequest) {
       success: true,
       content,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[analyze-url] Error:', error)
     return NextResponse.json(
       {
         error:
-          error.message || 'Failed to analyze the URL. Please try again.',
+          getErrorMessage(error) || 'Failed to analyze the URL. Please try again.',
       },
       { status: 500 },
     )

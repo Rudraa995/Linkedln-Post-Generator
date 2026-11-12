@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getErrorMessage } from '@/lib/utils'
 import { improvePost } from '@/services/ai/openrouter'
 
 export const runtime = 'nodejs'
@@ -13,9 +14,9 @@ export async function POST(req: NextRequest) {
 
     const rewritten = await improvePost(content, action, tone)
     return NextResponse.json({ success: true, content: rewritten })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: error.message || 'Failed to rewrite post' },
+      { error: getErrorMessage(error) || 'Failed to rewrite post' },
       { status: 500 },
     )
   }

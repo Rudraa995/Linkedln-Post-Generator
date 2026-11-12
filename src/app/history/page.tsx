@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { getPosts, deletePost, duplicatePost, updatePost } from '@/lib/storage'
-import { type PostStatus, type PostType } from '@/types'
+import { type PostStatus, type PostType, type LinkedInPost } from '@/types'
 import { formatDate } from '@/lib/utils'
 
 const POST_TYPE_LABELS: Record<PostType, string> = {
@@ -181,7 +181,7 @@ function PostRow({
   onDuplicate,
   onStatusChange,
 }: {
-  post: any
+  post: LinkedInPost
   onDelete: (id: string) => void
   onDuplicate: (id: string) => void
   onStatusChange: (id: string, status: PostStatus) => void

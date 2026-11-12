@@ -8,6 +8,7 @@ import {
   getSettings,
 } from '@/lib/storage'
 import { formatDate } from '@/lib/utils'
+import type { UserProfile } from '@/types'
 import {
   Card,
   CardContent,
@@ -55,7 +56,7 @@ export default function DashboardPage() {
     total: 0,
     recent: [],
   })
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
   const [calendarEvents, setCalendarEvents] = useState<any[]>([])
 
   useEffect(() => {

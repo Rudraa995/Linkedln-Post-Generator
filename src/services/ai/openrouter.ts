@@ -10,6 +10,7 @@
  */
 
 import { OpenAI } from 'openai'
+import type { UserProfile } from '@/types'
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'openai/gpt-oss-120b'
@@ -55,7 +56,7 @@ export type GeneratePostInput = {
   emojiPreference: string
   hashtagsEnabled: boolean
   useProfileContext: boolean
-  profile?: any
+  profile?: UserProfile
 }
 
 export type GeneratedPost = {
@@ -362,7 +363,7 @@ export async function generatePostFromUrl(input: {
   sourceContent: string
   sourceTitle: string
   sourceUrl: string
-  profile?: any
+  profile?: UserProfile
 }): Promise<GeneratedPost> {
   if (!OPENROUTER_API_KEY) {
     throw new Error(

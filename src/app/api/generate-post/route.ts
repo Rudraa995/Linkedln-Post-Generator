@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getErrorMessage } from '@/lib/utils'
 import { generateLinkedInPost } from '@/services/ai/openrouter'
 
 export const runtime = 'nodejs'
@@ -43,12 +44,12 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json({ success: true, post })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[generate-post] Error:', error)
     return NextResponse.json(
       {
         error:
-          error.message || 'Failed to generate post. Please try again.',
+          getErrorMessage(error) || 'Failed to generate post. Please try again.',
       },
       { status: 500 },
     )
