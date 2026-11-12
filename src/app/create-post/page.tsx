@@ -5,6 +5,10 @@ import { ArrowLeft, Edit3, Image as ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import SplitText from '@/components/SplitText'
+import Magnet from '@/components/Magnet'
+import AnimatedContent from '@/components/AnimatedContent'
+import ShinyText from '@/components/ShinyText'
 import PostEditor from '@/components/post-editor/PostEditor'
 import LinkedInPreview from '@/components/post-editor/LinkedInPreview'
 import { getErrorMessage } from '@/lib/utils'
@@ -92,9 +96,9 @@ export default function CreatePostPage() {
       {step === 'form' && (
         <>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <h1 className="text-3xl font-bold tracking-tight">Create Post</h1>
+            <SplitText text="Create Post" tag="h1" className="text-3xl font-bold tracking-tight" effect="pop" trigger="load" />
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">AI-powered generation</span>
+              <ShinyText text="AI-powered generation" className="text-sm text-muted-foreground" speed={3} />
             </div>
           </div>
 
@@ -104,8 +108,9 @@ export default function CreatePostPage() {
             </div>
           )}
 
-          <Card>
-            <CardHeader>
+          <AnimatedContent trigger="mount" distance={24}>
+            <Card>
+              <CardHeader>
               <CardTitle>Post Generation</CardTitle>
               <CardDescription>
                 Fill in the details below to generate a personalized LinkedIn post using AI.
@@ -244,15 +249,18 @@ export default function CreatePostPage() {
                 </div>
               </div>
 
-              <Button
-                onClick={handleGenerate}
-                disabled={loading || !form.topic.trim()}
-                className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-md font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
-              >
-                {loading ? 'Generating…' : <><Edit3 className="mr-2 h-4 w-4" /> Generate Post</>}
-              </Button>
+              <Magnet>
+                <Button
+                  onClick={handleGenerate}
+                  disabled={loading || !form.topic.trim()}
+                  className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-md font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
+                >
+                  {loading ? 'Generating…' : <><Edit3 className="mr-2 h-4 w-4" /> Generate Post</>}
+                </Button>
+              </Magnet>
             </CardContent>
           </Card>
+          </AnimatedContent>
         </>
       )}
 

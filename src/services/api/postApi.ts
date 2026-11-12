@@ -3,6 +3,8 @@
  */
 import type { UserProfile, LinkedInPost, AnalyzeUrlResponse } from '@/types'
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
+
 export interface GeneratePostParams {
   topic: string
   postType: string
@@ -26,7 +28,7 @@ export async function generatePost(params: GeneratePostParams): Promise<LinkedIn
   if (!res.ok || !data.success) {
     throw new Error(data.detail || data.error || 'Failed to generate post')
   }
-  return data.post
+  return data.post as LinkedInPost
 }
 
 export interface GeneratedPostFromUrl {
@@ -48,7 +50,7 @@ export async function generatePostFromUrl(params: Record<string, unknown>): Prom
   if (!res.ok || !data.success) {
     throw new Error(data.detail || data.error || 'Failed to generate post from URL')
   }
-  return data.post
+  return data.post as GeneratedPostFromUrl
 }
 
 export async function analyzeUrl(url: string): Promise<AnalyzeUrlResponse> {
@@ -77,11 +79,22 @@ export async function rewritePost(content: string, action: string, tone?: string
   return data.content
 }
 
+export interface RegenerateSectionResponse {
+  success: boolean
+  error?: string
+  hook?: string
+  main?: string
+  conclusion?: string
+  hashtags?: string | string[]
+  cta?: string
+  [key: string]: unknown
+}
+
 export async function regenerateSection(
   content: string,
   section: string,
   context: { topic: string; tone: string; length: string; language: string },
-): Promise<unknown> {
+): Promise<RegenerateSectionResponse> {
   const res = await fetch(`${API_BASE_URL}/api/regenerate-section`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -91,7 +104,7 @@ export async function regenerateSection(
   if (!res.ok || !data.success) {
     throw new Error(data.detail || data.error || 'Failed to regenerate section')
   }
-  return data
+  return data as RegenerateSectionResponse
 }
 
 export async function generateHashtags(topic: string, content: string = '', count: number = 5): Promise<string[]> {

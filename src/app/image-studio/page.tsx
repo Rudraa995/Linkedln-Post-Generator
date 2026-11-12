@@ -5,6 +5,9 @@ import { Image as ImageIcon, Download, RefreshCw, Wand2, Play } from 'lucide-rea
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import SplitText from '@/components/SplitText'
+import Magnet from '@/components/Magnet'
+import ShinyText from '@/components/ShinyText'
 import { generateImage } from '@/services/api/imageApi'
 import { getErrorMessage } from '@/lib/utils'
 
@@ -113,11 +116,8 @@ export default function ImageStudioPage() {
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Image Studio</h1>
-          <p className="text-muted-foreground">
-            Generate AI images for your LinkedIn posts. Choose a style and
-            dimension that matches your content.
-          </p>
+          <SplitText text="Image Studio" tag="h1" className="text-3xl font-bold tracking-tight" effect="blur" trigger="load" />
+          <ShinyText text="Generate AI images for your LinkedIn posts. Choose a style and dimension that matches your content." className="text-muted-foreground" speed={3} />
         </div>
       </div>
 
@@ -186,21 +186,23 @@ export default function ImageStudioPage() {
                 </div>
               </div>
 
-              <Button
-                onClick={handleGenerate}
-                disabled={loading || !prompt.trim()}
-                className="w-full"
-              >
-                {loading ? (
-                  <>
-                    <Play className="mr-2 h-4 w-4 animate-spin" /> Generating…
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="mr-2 h-4 w-4" /> Generate Image
-                  </>
-                )}
-              </Button>
+              <Magnet>
+                <Button
+                  onClick={handleGenerate}
+                  disabled={loading || !prompt.trim()}
+                  className="w-full"
+                >
+                  {loading ? (
+                    <>
+                      <Play className="mr-2 h-4 w-4 animate-spin" /> Generating…
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="mr-2 h-4 w-4" /> Generate Image
+                    </>
+                  )}
+                </Button>
+              </Magnet>
             </CardContent>
           </Card>
         </div>

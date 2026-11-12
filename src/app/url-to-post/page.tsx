@@ -9,7 +9,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge'
 import { formatDateTime, getErrorMessage } from '@/lib/utils'
 import { analyzeUrl, generatePostFromUrl } from '@/services/api/postApi'
-import type { AnalyzeUrlResponse, LinkedInPost } from '@/types'
+import type { AnalyzeUrlResponse } from '@/types'
+import type { GeneratedPostFromUrl } from '@/services/api/postApi'
 
 type Step = 'input' | 'analyzing' | 'extracted' | 'generating' | 'result' | 'error'
 
@@ -43,7 +44,7 @@ export default function UrlToPostPage() {
   const [manualContent, setManualContent] = useState('')
   const [extracted, setExtracted] = useState<AnalyzeUrlResponse | null>(null)
   const [form, setForm] = useState<FormValues>(DEFAULT_FORM)
-  const [generated, setGenerated] = useState<LinkedInPost | null>(null)
+  const [generated, setGenerated] = useState<GeneratedPostFromUrl | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 

@@ -17,6 +17,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import SplitText from '@/components/SplitText'
+import CountUp from '@/components/CountUp'
+import SpotlightCard from '@/components/SpotlightCard'
+import AnimatedContent from '@/components/AnimatedContent'
+import GradientText from '@/components/GradientText'
+import ShinyText from '@/components/ShinyText'
+import Magnet from '@/components/Magnet'
+import Aurora from '@/components/Aurora'
 import {
   Link as LinkIcon,
   Edit3,
@@ -38,16 +46,20 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon: Icon, href }: StatCardProps) {
   return (
-    <Card onClick={() => href && window.location.assign(href)} className="cursor-pointer hover:shadow-md transition-shadow">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+    <SpotlightCard
+      theme="light"
+      onClick={() => href && window.location.assign(href)}
+      className="cursor-pointer"
+    >
+      <div className="flex flex-row items-center justify-between pb-2">
+        <span className="text-sm font-medium">{title}</span>
         <Icon className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        {change && <p className="text-xs text-muted-foreground">{change}</p>}
-      </CardContent>
-    </Card>
+      </div>
+      <div className="text-2xl font-bold">
+        <CountUp to={Number(value) || 0} duration={1.2} />
+      </div>
+      {change && <p className="text-xs text-muted-foreground">{change}</p>}
+    </SpotlightCard>
   )
 }
 
@@ -77,31 +89,43 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="relative overflow-hidden rounded-xl p-6">
+        <Aurora className="absolute inset-0 -z-10 opacity-40" colorStops={['#0077b5', '#005887', '#eef3f8']} />
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Welcome back,{profile ? ` ${profile.fullName.split(' ')[0]}` : ''}
-          </h1>
-          <p className="text-muted-foreground">
-            Create, edit, and schedule your LinkedIn content with AI.
-          </p>
+          <SplitText
+            text={`Welcome back${profile ? `, ${profile.fullName.split(' ')[0]}` : ''}`}
+            tag="h1"
+            className="text-3xl font-bold tracking-tight"
+            effect="wave"
+            trigger="load"
+          />
+          <ShinyText
+            text="Create, edit, and schedule your LinkedIn content with AI."
+            className="text-muted-foreground"
+            speed={3}
+          />
         </div>
         <div className="flex items-center gap-3">
-          <Button
-            className="px-6 py-2.5 text-sm font-semibold"
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                window.location.assign('/create-post')
-              }
-            }}
-          >
-            <Edit3 className="mr-2 h-4 w-4" /> Create New Post
-          </Button>
+          <Magnet>
+            <Button
+              className="px-6 py-2.5 text-sm font-semibold"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.location.assign('/create-post')
+                }
+              }}
+            >
+              <Edit3 className="mr-2 h-4 w-4" /> Create New Post
+            </Button>
+          </Magnet>
         </div>
+      </div>
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <AnimatedContent trigger="mount" distance={24}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           title="Total Posts Generated"
           value={String(posts.total)}
@@ -120,6 +144,7 @@ export default function DashboardPage() {
           href="/calendar"
         />
       </div>
+      </AnimatedContent>
 
       {/* Quick Actions & Recent Posts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -127,7 +152,11 @@ export default function DashboardPage() {
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle>
+                <GradientText colors={['#0077b5', '#005887', '#0077b5']} animationSpeed={4}>
+                  Quick Actions
+                </GradientText>
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button
@@ -178,7 +207,11 @@ export default function DashboardPage() {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Recent Generated Posts</CardTitle>
+              <CardTitle>
+                <GradientText colors={['#0077b5', '#005887', '#0077b5']} animationSpeed={4}>
+                  Recent Generated Posts
+                </GradientText>
+              </CardTitle>
               <a href="/history" className="text-sm text-primary hover:underline">
                 View all
               </a>
