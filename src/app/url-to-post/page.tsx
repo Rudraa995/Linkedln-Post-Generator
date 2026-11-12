@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import SplitText from '@/components/SplitText'
+import ShinyText from '@/components/ShinyText'
 import { Badge } from '@/components/ui/badge'
 import { formatDateTime, getErrorMessage } from '@/lib/utils'
 import { analyzeUrl, generatePostFromUrl } from '@/services/api/postApi'
@@ -141,11 +143,8 @@ export default function UrlToPostPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">URL to Post</h1>
-          <p className="text-muted-foreground">
-            Convert a GitHub repository, blog article, or documentation page into
-            a LinkedIn post. AI analyzes the content and creates a shareable post.
-          </p>
+          <SplitText text="URL to Post" tag="h1" className="text-3xl font-bold tracking-tight" effect="skew" trigger="load" />
+          <ShinyText text="Convert a GitHub repository, blog article, or documentation page into a LinkedIn post. AI analyzes the content and creates a shareable post." className="text-muted-foreground" speed={3} />
         </div>
       </div>
 
