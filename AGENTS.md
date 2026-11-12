@@ -8,7 +8,6 @@ AI-Powered LinkedIn Content Creator. Full-stack app: Next.js 14 frontend + Pytho
 - `src/app/api/*` — Next.js API routes (server-side, uses `src/services/ai/openrouter.ts`).
 - `src/services/api/*` — Client services that call the FastAPI backend (`NEXT_PUBLIC_API_BASE_URL`).
 - `backend/` — FastAPI app (`app/main.py`). Routers in `app/routers/`, services in `app/services/`.
-- `docker-compose.yml`, `Dockerfile.frontend`, `backend/Dockerfile` — containerized run.
 
 ## Commands
 ### Frontend
@@ -22,9 +21,6 @@ AI-Powered LinkedIn Content Creator. Full-stack app: Next.js 14 frontend + Pytho
 - Install: `cd backend && pip install -r requirements.txt`
 - Run: `cd backend && uvicorn app.main:app --reload --port 8000`
 - API docs: http://localhost:8000/docs
-
-### Docker
-- `docker-compose up --build`
 
 ## Environment
 - Root `.env` (from `.env.example`): `OPENROUTER_API_KEY`, `NEXT_PUBLIC_*`.

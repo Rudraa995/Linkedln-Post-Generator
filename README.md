@@ -21,7 +21,6 @@ linkedin-content-creator/
 │   │   └── services/  # AI, URL, Image services
 │   ├── requirements.txt
 │   └── .env.example
-├── docker-compose.yml # Run both services together
 ├── .env               # Frontend environment variables
 ├── .env.example
 └── package.json
@@ -53,12 +52,6 @@ npm run dev
 ```
 
 Frontend runs at: http://localhost:3000
-
-### 3. Run Both with Docker Compose
-
-```bash
-docker-compose up --build
-```
 
 ## Environment Variables
 
