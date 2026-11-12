@@ -20,7 +20,7 @@ import {
   Link as LinkIcon,
   Edit3,
   User,
-  Image,
+  Image as ImageIcon,
   Calendar,
   History,
   LayoutDashboard,
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                 className="w-full justify-start text-left"
                 onClick={() => window.location.assign('/image-studio')}
               >
-                <Image className="mr-2 h-4 w-4" />
+                <ImageIcon className="mr-2 h-4 w-4" />
                 Generate Image
               </Button>
               <Button

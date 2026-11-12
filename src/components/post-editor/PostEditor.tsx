@@ -120,13 +120,13 @@ export default function PostEditor({
     } finally {
       setSaving(false)
     }
-  }, [post, content, hashtags, onSave, savePost])
+  }, [post, content, hashtags, onSave])
 
   const handleDelete = useCallback(() => {
     if (!post || !window.confirm('Delete this post?')) return
     deletePost(post.id)
     onBack?.()
-  }, [post, deletePost, onBack])
+  }, [post, onBack])
 
   const handleAIAction = useCallback(async (action: EditAction, tone?: string) => {
     setActionLoading(action)

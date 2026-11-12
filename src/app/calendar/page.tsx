@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   Calendar as CalendarIcon,
   List,
@@ -75,12 +75,15 @@ export default function CalendarPage() {
     )
   })
 
-  const eventsByDate = new Map<string, CalendarEvent[]>()
-  monthEvents.forEach((e) => {
-    const key = e.date
-    if (!eventsByDate.has(key)) eventsByDate.set(key, [])
-    eventsByDate.get(key)!.push(e)
-  })
+  const eventsByDate = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>()
+    monthEvents.forEach((e) => {
+      const key = e.date
+      if (!map.has(key)) map.set(key, [])
+      map.get(key)!.push(e)
+    })
+    return map
+  }, [monthEvents])
 
   const prevMonth = useCallback(() => {
     setCurrentDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))
