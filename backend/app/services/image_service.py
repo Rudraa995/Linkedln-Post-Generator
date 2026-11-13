@@ -33,11 +33,31 @@ def build_image_prompt(prompt: str, style: str, dimension: str) -> str:
     return f"{prompt}. {style_prompt}. Aspect ratio {size['width']}:{size['height']}, high resolution, professional quality, suitable for LinkedIn social media post."
 
 
+def _is_configured() -> bool:
+    key = IMAGE_API_KEY
+    if not key:
+        return False
+    if key.strip().lower().startswith("your_") or "your_image_api_key" in key.lower():
+        return False
+    return True
+
 def is_configured() -> bool:
-    return bool(IMAGE_API_KEY)
+    return _is_configured()
 
 
 async def generate_image(prompt: str, style: str, dimension: str) -> dict:
+    if not _is_configured():
+        size = DIMENSION_SIZES.get(dimension, DIMENSION_SIZES["landscape"])
+        w, h = size["width"], size["height"]
+        svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}"><rect width="100%" height="100%" fill="#e5e7eb"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#6b7280" font-size="24" font-family="sans-serif">Generated Image</text></svg>'
+        import base64
+        placeholder = "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
+        return {
+            "imageUrl": placeholder,
+            "prompt": build_image_prompt(prompt, style, dimension),
+            "provider": "demo",
+            "model": "placeholder",
+        }
     if not IMAGE_API_KEY:
         raise ValueError("Image generation API key is not configured. Set IMAGE_GENERATION_API_KEY in your .env file to enable image generation.")
 

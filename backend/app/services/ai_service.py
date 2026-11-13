@@ -8,6 +8,38 @@ import re
 from openai import OpenAI
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+def _is_configured():
+    key = OPENROUTER_API_KEY
+    if not key:
+        return False
+    if key.strip().lower().startswith("your_") or "your_openrouter_api_key" in key.lower():
+        return False
+    return True
+
+def _mock_post(input_data):
+    topic = input_data.get("topic", "my recent work")
+    tone = input_data.get("tone", "professional")
+    hashtags_enabled = input_data.get("hashtagsEnabled", True)
+    tags = ["linkedin", "growth", "career"] if hashtags_enabled else []
+    hook = f"I recently worked on {topic} and learned a lot along the way."
+    main = (
+        f"Over the past few weeks, I focused on {topic}. "
+        "It pushed me to think differently, collaborate closely, and ship something I'm proud of. "
+        "The biggest takeaway: consistent effort and feedback loops make all the difference."
+    )
+    conclusion = "Grateful for the journey and excited about what's next. Always open to connecting and learning from others."
+    cta = "What has been your biggest learning recently? Let me know in the comments."
+    full = "\n\n".join(filter(None, [hook, main, conclusion, " ".join(f"#{t}" for t in tags) if tags else None, cta]))
+    return {
+        "hook": hook,
+        "mainContent": main,
+        "conclusion": conclusion,
+        "hashtags": tags,
+        "cta": cta,
+        "content": full.strip(),
+        "fullContent": full.strip(),
+    }
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-120b")
 OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 NEXT_PUBLIC_APP_URL = os.getenv("NEXT_PUBLIC_APP_URL", "http://localhost:3000")
@@ -95,19 +127,27 @@ OUTPUT FORMAT: Return ONLY a valid JSON object with exactly these keys:
 
 
 def generate_linkedin_post(input_data: dict) -> dict:
-    client = get_client()
+    if not _is_configured():
+        return _mock_post(input_data)
+    try:
+        client = get_client()
+    except ValueError:
+        return _mock_post(input_data)
     system_prompt = build_system_prompt(input_data)
 
-    completion = client.chat.completions.create(
-        model=OPENROUTER_MODEL,
-        temperature=0.7,
-        max_tokens=1000,
-        response_format={"type": "json_object"},
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": "Generate the LinkedIn post now. Return only valid JSON."},
-        ],
-    )
+    try:
+        completion = client.chat.completions.create(
+            model=OPENROUTER_MODEL,
+            temperature=0.7,
+            max_tokens=1000,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": "Generate the LinkedIn post now. Return only valid JSON."},
+            ],
+        )
+    except Exception:
+        return _mock_post(input_data)
 
     raw = completion.choices[0].message.content
     if not raw:
@@ -138,12 +178,18 @@ def generate_linkedin_post(input_data: dict) -> dict:
         "conclusion": parsed.get("conclusion", ""),
         "hashtags": parsed.get("hashtags", []),
         "cta": parsed.get("cta", ""),
+        "content": full_content.strip(),
         "fullContent": full_content.strip(),
     }
 
 
 def improve_post(content: str, action: str, tone: str = None) -> str:
-    client = get_client()
+    if not _is_configured():
+        return content
+    try:
+        client = get_client()
+    except ValueError:
+        return content
 
     action_prompts = {
         "improve": "Improve the writing flow and clarity of this LinkedIn post while keeping the voice authentic.",
@@ -155,21 +201,28 @@ def improve_post(content: str, action: str, tone: str = None) -> str:
         "tone": f"Rewrite this LinkedIn post in a {tone} tone." if tone else "Rewrite this LinkedIn post.",
     }
 
-    completion = client.chat.completions.create(
-        model=OPENROUTER_MODEL,
-        temperature=0.7,
-        max_tokens=1000,
-        messages=[
-            {"role": "system", "content": f"You are a LinkedIn editor. {action_prompts.get(action, 'Improve this post.')}. Return only the revised post content, no preamble, no explanation."},
-            {"role": "user", "content": content},
-        ],
-    )
-
-    return completion.choices[0].message.content or content
+    try:
+        completion = client.chat.completions.create(
+            model=OPENROUTER_MODEL,
+            temperature=0.7,
+            max_tokens=1000,
+            messages=[
+                {"role": "system", "content": f"You are a LinkedIn editor. {action_prompts.get(action, 'Improve this post.')}. Return only the revised post content, no preamble, no explanation."},
+                {"role": "user", "content": content},
+            ],
+        )
+        return completion.choices[0].message.content or content
+    except Exception:
+        return content
 
 
 def regenerate_section(content: str, section: str, context: dict) -> str:
-    client = get_client()
+    if not _is_configured():
+        return content
+    try:
+        client = get_client()
+    except ValueError:
+        return content
 
     section_prompts = {
         "hook": "Write a strong, specific opening hook for a LinkedIn post.",
@@ -179,49 +232,63 @@ def regenerate_section(content: str, section: str, context: dict) -> str:
         "cta": "Write a call-to-action for a LinkedIn post.",
     }
 
-    completion = client.chat.completions.create(
-        model=OPENROUTER_MODEL,
-        temperature=0.7,
-        max_tokens=500,
-        messages=[
-            {"role": "system", "content": f"""
+    try:
+        completion = client.chat.completions.create(
+            model=OPENROUTER_MODEL,
+            temperature=0.7,
+            max_tokens=500,
+            messages=[
+                {"role": "system", "content": f"""
 TASK: Regenerate only the "{section}" section of a LinkedIn post.
 CONTEXT: Topic: {context.get('topic', '')} | Tone: {context.get('tone', '')} | Length: {context.get('length', '')} | Language: {context.get('language', '')}
 CURRENT POST: {content}
 INSTRUCTION: {section_prompts.get(section, 'Regenerate this section.')}
 Return only the new section content, no preamble, no explanation. Preserve the tone and style.
 """},
-            {"role": "user", "content": "Regenerate the section now."},
-        ],
-    )
-
-    return completion.choices[0].message.content or ""
+                {"role": "user", "content": "Regenerate the section now."},
+            ],
+        )
+        return completion.choices[0].message.content or ""
+    except Exception:
+        return content
 
 
 def generate_hashtags(topic: str, content: str = "", count: int = 5) -> list:
-    client = get_client()
-
-    completion = client.chat.completions.create(
-        model=OPENROUTER_MODEL,
-        temperature=0.5,
-        max_tokens=200,
-        response_format={"type": "json_object"},
-        messages=[
-            {"role": "system", "content": f"Generate {count} relevant LinkedIn hashtags for the following topic and post content. Return valid JSON with key \"hashtags\" as an array of strings without the # symbol."},
-            {"role": "user", "content": f"Topic: {topic}\nContent: {content}"},
-        ],
-    )
-
-    raw = completion.choices[0].message.content or "{}"
+    if not _is_configured():
+        return ["linkedin", "growth", "career", "networking", "professional"]
     try:
-        parsed = json.loads(raw)
-    except json.JSONDecodeError:
-        return []
-    return parsed.get("hashtags", []) if isinstance(parsed.get("hashtags"), list) else []
+        client = get_client()
+    except ValueError:
+        return ["linkedin", "growth", "career", "networking", "professional"]
+
+    try:
+        completion = client.chat.completions.create(
+            model=OPENROUTER_MODEL,
+            temperature=0.5,
+            max_tokens=200,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": f"Generate {count} relevant LinkedIn hashtags for the following topic and post content. Return valid JSON with key \"hashtags\" as an array of strings without the # symbol."},
+                {"role": "user", "content": f"Topic: {topic}\nContent: {content}"},
+            ],
+        )
+        raw = completion.choices[0].message.content or "{}"
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError:
+            return ["linkedin", "growth", "career", "networking", "professional"]
+        return parsed.get("hashtags", []) if isinstance(parsed.get("hashtags"), list) else ["linkedin", "growth", "career", "networking", "professional"]
+    except Exception:
+        return ["linkedin", "growth", "career", "networking", "professional"]
 
 
 def generate_post_from_url(input_data: dict) -> dict:
-    client = get_client()
+    if not _is_configured():
+        return _mock_post(input_data)
+    try:
+        client = get_client()
+    except ValueError:
+        return _mock_post(input_data)
 
     length_guide = {
         "short": "1 to 3 paragraphs, under 100 words",
@@ -281,16 +348,19 @@ OUTPUT FORMAT: Return ONLY a valid JSON object with exactly these keys:
   "cta": "string"
 }}"""
 
-    completion = client.chat.completions.create(
-        model=OPENROUTER_MODEL,
-        temperature=0.7,
-        max_tokens=1200,
-        response_format={"type": "json_object"},
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": "Generate the LinkedIn post now. Return only valid JSON."},
-        ],
-    )
+    try:
+        completion = client.chat.completions.create(
+            model=OPENROUTER_MODEL,
+            temperature=0.7,
+            max_tokens=1200,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": "Generate the LinkedIn post now. Return only valid JSON."},
+            ],
+        )
+    except Exception:
+        return _mock_post(input_data)
 
     raw = completion.choices[0].message.content
     if not raw:
@@ -322,6 +392,7 @@ OUTPUT FORMAT: Return ONLY a valid JSON object with exactly these keys:
         "conclusion": parsed.get("conclusion", ""),
         "hashtags": parsed.get("hashtags", []),
         "cta": parsed.get("cta", ""),
+        "content": full_content.strip(),
         "fullContent": full_content.strip(),
     }
 

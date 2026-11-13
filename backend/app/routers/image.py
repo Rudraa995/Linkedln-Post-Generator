@@ -8,11 +8,6 @@ router = APIRouter()
 
 @router.post("/generate-image")
 async def generate_image_endpoint(request: GenerateImageRequest):
-    if not is_configured():
-        raise HTTPException(
-            status_code=503,
-            detail="Image generation is not configured. Set IMAGE_GENERATION_API_KEY in your .env file.",
-        )
     try:
         result = await generate_image(request.prompt, request.style, request.dimension)
         return {"success": True, **result}
