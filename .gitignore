@@ -62,5 +62,3 @@ skills-lock.json
 # Nested separate git repository
 Linkedln-Post-Generator/
 
-# Docker
-docker-compose.override.yml

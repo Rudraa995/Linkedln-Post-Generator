@@ -29,3 +29,17 @@ export function truncate(text: string, length: number): string {
 export function generateId(): string {
  return crypto.randomUUID?.() ?? `id_${Date.now()}_${Math.random().toString(36).slice(2)}`
 }
+
+/**
+ * Safely extract a human-readable message from an unknown error.
+ * Use in catch blocks instead of `error: any`.
+ */
+export function getErrorMessage(error: unknown, fallback = 'Something went wrong'): string {
+  if (error instanceof Error) return error.message
+  if (typeof error === 'string') return error
+  if (error && typeof error === 'object' && 'message' in error) {
+    const msg = (error as { message?: unknown }).message
+    if (typeof msg === 'string') return msg
+  }
+  return fallback
+}
