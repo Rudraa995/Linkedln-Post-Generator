@@ -1,7 +1,7 @@
 """Post generation router."""
 from fastapi import APIRouter, HTTPException
 from app.models.schemas import GeneratePostRequest, GeneratePostFromUrlRequest, RewritePostRequest, RegenerateSectionRequest, GenerateHashtagsRequest
-from app.services.ai_service import generate_linkedin_post, generate_post_from_url, improve_post, regenerate_section, generate_hashtags, generate_image_prompt
+from app.services.ai_service import generate_linkedin_post, generate_post_from_url as gen_post_from_url, improve_post, regenerate_section, generate_hashtags, generate_image_prompt
 
 router = APIRouter()
 
@@ -20,7 +20,7 @@ async def generate_post(request: GeneratePostRequest):
 @router.post("/generate-post-from-url")
 async def generate_post_from_url(request: GeneratePostFromUrlRequest):
     try:
-        result = generate_post_from_url(request.dict())
+        result = gen_post_from_url(request.dict())
         return {"success": True, "post": result}
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
