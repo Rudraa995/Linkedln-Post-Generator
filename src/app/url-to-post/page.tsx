@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { formatDateTime } from '@/lib/utils'
+import { formatDateTime, copyToClipboard } from '@/lib/utils'
 import { analyzeUrl, generatePostFromUrl } from '@/services/api/postApi'
 import { generateImage } from '@/services/api/imageApi'
 
@@ -135,7 +135,7 @@ export default function UrlToPostPage() {
 
  const handleCopy = useCallback(() => {
   if (!generated?.fullContent) return
-  navigator.clipboard.writeText(generated.fullContent)
+  copyToClipboard(generated.fullContent)
  }, [generated])
 
  const handleDownload = useCallback(() => {
@@ -228,29 +228,6 @@ export default function UrlToPostPage() {
        {loading ? 'Analyzing...' : 'Analyze URL'}
       </Button>
 
-      <div className="relative flex items-center gap-2 my-2">
-       <div className="flex-1 h-px bg-border" />
-       <span className="text-xs text-muted-foreground">OR</span>
-       <div className="flex-1 h-px bg-border" />
-      </div>
-
-      <div className="space-y-2">
-       <label className="text-sm font-medium text-foreground">Paste content manually</label>
-       <Textarea
-        value={manualContent}
-        onChange={(e) => setManualContent(e.target.value)}
-        placeholder="Paste the article or repository content here..."
-        rows={4}
-       />
-       <Button
-        variant="outline"
-        onClick={handleUseManual}
-        disabled={loading || !manualContent.trim()}
-        className="w-full"
-       >
-        Use Manual Content
-       </Button>
-      </div>
      </CardContent>
     </Card>
    )}
@@ -301,7 +278,7 @@ export default function UrlToPostPage() {
          <Button
           variant="outline"
           size="sm"
-          onClick={() => navigator.clipboard.writeText(extracted.content)}
+          onClick={() => copyToClipboard(extracted.content)}
          >
           <Copy className="w-4 h-4 mr-1" /> Copy
          </Button>

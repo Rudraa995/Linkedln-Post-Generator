@@ -80,7 +80,7 @@ export default function DashboardPage() {
  const plannedCount = calendarEvents.filter(
   (e) => e.status === 'planned' || e.status === 'scheduled',
  ).length
- const draftCount = posts.recent.filter((p) => p.status === 'draft').length
+ const draftCount = getPosts().filter((p) => p.status === 'draft').length
 
  return (
   <div className="space-y-8">

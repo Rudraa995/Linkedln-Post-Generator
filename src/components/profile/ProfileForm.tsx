@@ -217,64 +217,6 @@ export default function ProfileForm() {
  }
  />
 
- {/* Achievements */}
- <AchievementList
- achievements={profile.achievements}
- onChange={(achievements) =>
- saveProfile({ ...profile, achievements })
- }
- />
-
- {/* Professional Interests */}
- <Card>
- <CardHeader>
- <CardTitle>Professional Interests</CardTitle>
- </CardHeader>
- <CardContent>
- <div className="space-y-2">
- {profile.professionalInterests.map((interest: string, i: number) => (
- <div key={i} className="flex items-center gap-2">
- <Input
- value={interest}
- onChange={(e) => {
- const interests = [...profile.professionalInterests]
- interests[i] = e.target.value
- saveProfile({ ...profile, professionalInterests: interests })
- }}
- placeholder="e.g. Generative AI"
- />
- <button
- type="button"
- onClick={() => {
- const interests = profile.professionalInterests.filter(
- (_: string, idx: number) => idx !== i,
- )
- saveProfile({ ...profile, professionalInterests: interests })
- }}
- className="p-1 hover:bg-accent rounded"
- >
- <Trash2 className="w-4 h-4" />
- </button>
- </div>
- ))}
- <button
- type="button"
- onClick={() => {
- saveProfile({
- ...profile,
- professionalInterests: [
- ...profile.professionalInterests,
- '',
- ],
- })
- }}
- className="text-xs flex items-center gap-1 text-primary hover:text-primary/90"
- >
- <Plus className="w-3 h-3" /> Add Interest
- </button>
- </div>
- </CardContent>
- </Card>
  </form>
  </div>
  )

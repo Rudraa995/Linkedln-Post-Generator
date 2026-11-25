@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import PostEditor from '@/components/post-editor/PostEditor'
 import LinkedInPreview from '@/components/post-editor/LinkedInPreview'
 import { savePost, getPosts, getProfile } from '@/lib/storage'
+import { copyToClipboard } from '@/lib/utils'
 import { generatePost } from '@/services/api/postApi'
 import { type LinkedInPost, type PostType, type Tone, type Length, type Language, type EmojiPreference, type TargetAudience } from '@/types'
 
@@ -66,10 +67,10 @@ export default function CreatePostPage() {
  try {
  // Read profile from client-side localStorage
  const profile = form.useProfileContext ? getProfile() : undefined
- const post = await generatePost({ ...form, profile })
+ const post = await generatePost({ ...form, profile: profile ?? undefined })
  const fullPost = {
   ...post,
-  id: post.id || `post_${Date.now()}`,
+  id: (post as any).id || `post_${Date.now()}`,
   topic: form.topic,
   postType: form.postType,
   tone: form.tone,
@@ -79,7 +80,7 @@ export default function CreatePostPage() {
   emojiPreference: form.emojiPreference,
   hashtagsEnabled: form.hashtagsEnabled,
   useProfileContext: form.useProfileContext,
-  content: post.content || post.fullContent || '',
+  content: (post as any).content || (post as any).fullContent || '',
   status: 'draft' as const,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
@@ -139,6 +140,7 @@ export default function CreatePostPage() {
  />
  </div>
 
+ <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
  <div className="space-y-2">
  <label className="text-sm font-medium text-foreground">Post Type</label>
  <select
@@ -153,8 +155,6 @@ export default function CreatePostPage() {
  ))}
  </select>
  </div>
-
- <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div className="space-y-2">
  <label className="text-sm font-medium text-foreground">Tone</label>
  <select
@@ -305,7 +305,7 @@ export default function CreatePostPage() {
    <CardFooter className="flex gap-3">
     <Button
      onClick={() => {
-      navigator.clipboard.writeText(generated.content)
+      copyToClipboard(generated.content)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
      }}

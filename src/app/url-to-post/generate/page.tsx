@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { generatePost, generatePostFromUrl } from '@/services/api/postApi'
 import { generateImage } from '@/services/api/imageApi'
 import { savePost } from '@/lib/storage'
+import { copyToClipboard } from '@/lib/utils'
 
 export default function UrlToPostGeneratePage() {
  const [extracted, setExtracted] = useState<any>(null)
@@ -47,6 +48,7 @@ export default function UrlToPostGeneratePage() {
   setError(null)
   try {
    const post = await generatePostFromUrl({
+    topic: extracted.title || 'Extracted content',
     postType,
     tone,
     targetAudience: 'General Audience',
@@ -88,7 +90,7 @@ export default function UrlToPostGeneratePage() {
 
  const handleCopyPost = useCallback(() => {
   if (!generated?.fullContent && !generated?.content) return
-  navigator.clipboard.writeText(generated.fullContent || generated.content)
+  copyToClipboard(generated.fullContent || generated.content)
   setCopied(true)
   setTimeout(() => setCopied(false), 2000)
  }, [generated])

@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import Sidebar from '@/components/layout/Sidebar'
 import Header from '@/components/layout/Header'
+import Chatbot from '@/components/Chatbot'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
  const pathname = usePathname()
@@ -36,7 +37,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
  }, [isLogin, pathname, router])
 
  if (isLogin) {
-  return <>{children}</>
+  return (
+   <>
+    {children}
+    <Chatbot />
+   </>
+  )
  }
 
  if (!authChecked) {
@@ -52,7 +58,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
      className={cn(
       'fixed left-0 top-16 z-20 h-[calc(100vh-4rem)] w-\[232px\] transform transition-transform duration-300 overflow-y-auto',
       sidebarOpen ? 'translate-x-0' : '-translate-x-full',
-      'sm:static sm:translate-x-0 sm:transform-none',
+      'sm:translate-x-0',
+
      )}
     >
      <Sidebar />
@@ -65,7 +72,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
      />
     )}
 
-    <main className="flex-1 min-w-0 px-6 py-6 max-w-[1200px] mx-auto w-full">
+    <main className="flex-1 min-w-0 px-6 py-6 max-w-[1200px] mx-auto w-full sm:ml-[232px]">
      {children}
     </main>
    </div>
@@ -81,6 +88,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
      </svg>
     </button>
    )}
+   <Chatbot />
   </div>
  )
 }

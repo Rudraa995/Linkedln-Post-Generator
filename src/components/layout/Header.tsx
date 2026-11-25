@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Sun, Moon, Bell, Search, User } from 'lucide-react'
+import { Sun, Moon, Bell, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -41,17 +41,8 @@ export default function Header() {
     <span className="font-semibold text-sm tracking-tight">linkedlnAI</span>
    </Link>
 
-   {/* Centered search */}
-   <div className="flex flex-1 items-center justify-center">
-    <div className="flex items-center gap-2 w-full max-w-[420px] bg-muted rounded-full px-3 h-9">
-     <Search className="w-4 h-4 text-muted-foreground shrink-0" />
-     <input
-      type="search"
-      placeholder="Search posts, profiles, templates..."
-      className="text-sm placeholder:text-muted-foreground focus:outline-none w-full bg-transparent"
-     />
-    </div>
-   </div>
+
+   <div className="flex-1" />
 
    {/* Actions */}
    <div className="flex items-center gap-3 shrink-0">

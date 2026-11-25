@@ -15,6 +15,7 @@ import {
  CalendarEvent,
  AppSettings,
 } from '@/types'
+import { supabase } from './supabase'
 
 const STORAGE_KEYS = {
  PROFILE: 'linkedin_creator_profile',
@@ -24,6 +25,11 @@ const STORAGE_KEYS = {
 } as const
 
 const isBrowser = typeof window !== 'undefined'
+
+function getUserId(): string | null {
+  if (!isBrowser) return null
+  return localStorage.getItem('linkedin_creator_user')
+}
 
 /**
  * Safe localStorage wrapper that handles private mode / quota errors.
@@ -71,7 +77,30 @@ export function getProfile(): UserProfile | null {
 
 export function updateProfile(profile: UserProfile): boolean {
  const updated = { ...profile, updatedAt: new Date().toISOString() }
- return safeSetItem(STORAGE_KEYS.PROFILE, JSON.stringify(updated))
+  const ok = safeSetItem(STORAGE_KEYS.PROFILE, JSON.stringify(updated))
+  if (supabase) {
+    const uid = getUserId()
+    if (uid) {
+      supabase.from('profiles').upsert({
+        user_id: uid,
+        full_name: updated.fullName,
+        headline: updated.headline,
+        about_me: updated.aboutMe,
+        current_role_title: updated.currentRole,
+        education: updated.education,
+        college_university: updated.collegeUniversity,
+        skills: updated.skills,
+        work_experience: updated.workExperience,
+        internship_experience: updated.internshipExperience,
+        projects: updated.projects,
+        certifications: updated.certifications,
+        achievements: updated.achievements,
+        professional_interests: updated.professionalInterests,
+        updated_at: updated.updatedAt,
+      }).then(() => {}, () => {})
+    }
+  }
+  return ok
 }
 
 export function deleteProfile(): boolean {
@@ -102,7 +131,39 @@ export function savePost(post: LinkedInPost): boolean {
  posts.unshift(updated)
  }
 
- return safeSetItem(STORAGE_KEYS.POSTS, JSON.stringify(posts))
+  const ok = safeSetItem(STORAGE_KEYS.POSTS, JSON.stringify(posts))
+  if (supabase) {
+    const uid = getUserId()
+    if (uid) {
+      supabase.from('posts').upsert({
+        id: updated.id,
+        user_id: uid,
+        topic: updated.topic,
+        post_type: updated.postType,
+        tone: updated.tone,
+        target_audience: updated.targetAudience,
+        length: updated.length,
+        language: updated.language,
+        emoji_preference: updated.emojiPreference,
+        hashtags_enabled: updated.hashtagsEnabled,
+        use_profile_context: updated.useProfileContext,
+        content: updated.content,
+        hook: updated.hook,
+        main_content: updated.mainContent,
+        conclusion: updated.conclusion,
+        hashtags: updated.hashtags,
+        cta: updated.cta,
+        image_url: updated.imageUrl,
+        image_prompt: updated.imagePrompt,
+        status: updated.status,
+        scheduled_at: updated.scheduledAt,
+        source_url: updated.sourceUrl,
+        source_title: updated.sourceTitle,
+        updated_at: updated.updatedAt,
+      }).then(() => {}, () => {})
+    }
+  }
+  return ok
 }
 
 export function updatePost(id: string, patch: Partial<LinkedInPost>): boolean {
@@ -116,7 +177,14 @@ export function updatePost(id: string, patch: Partial<LinkedInPost>): boolean {
 
 export function deletePost(id: string): boolean {
  const posts = getPosts().filter((p) => p.id !== id)
- return safeSetItem(STORAGE_KEYS.POSTS, JSON.stringify(posts))
+  const ok = safeSetItem(STORAGE_KEYS.POSTS, JSON.stringify(posts))
+  if (supabase) {
+    const uid = getUserId()
+    if (uid) {
+      supabase.from('posts').delete().eq('id', id).eq('user_id', uid).then(() => {}, () => {})
+    }
+  }
+  return ok
 }
 
 export function duplicatePost(id: string): boolean {
@@ -161,12 +229,35 @@ export function saveCalendarEvent(event: CalendarEvent): boolean {
  events.push(updated)
  }
 
- return safeSetItem(STORAGE_KEYS.CALENDAR, JSON.stringify(events))
+  const ok = safeSetItem(STORAGE_KEYS.CALENDAR, JSON.stringify(events))
+  if (supabase) {
+    const uid = getUserId()
+    if (uid) {
+      supabase.from('calendar_events').upsert({
+        id: updated.id,
+        user_id: uid,
+        post_id: updated.postId,
+        title: updated.title,
+        date: updated.date,
+        time: updated.time,
+        status: updated.status,
+        updated_at: updated.updatedAt || new Date().toISOString(),
+      }).then(() => {}, () => {})
+    }
+  }
+  return ok
 }
 
 export function deleteCalendarEvent(id: string): boolean {
  const events = getCalendarEvents().filter((e) => e.id !== id)
- return safeSetItem(STORAGE_KEYS.CALENDAR, JSON.stringify(events))
+  const ok = safeSetItem(STORAGE_KEYS.CALENDAR, JSON.stringify(events))
+  if (supabase) {
+    const uid = getUserId()
+    if (uid) {
+      supabase.from('calendar_events').delete().eq('id', id).eq('user_id', uid).then(() => {}, () => {})
+    }
+  }
+  return ok
 }
 
 /** ---------- Settings ---------- */
@@ -183,7 +274,18 @@ export function getSettings(): AppSettings | null {
 
 export function updateSettings(settings: AppSettings): boolean {
  const updated = { ...settings, updatedAt: new Date().toISOString() }
- return safeSetItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated))
+  const ok = safeSetItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated))
+  if (supabase) {
+    const uid = getUserId()
+    if (uid) {
+      supabase.from('settings').upsert({
+        user_id: uid,
+        data: updated,
+        updated_at: updated.updatedAt,
+      }).then(() => {}, () => {})
+    }
+  }
+  return ok
 }
 
 /** ---------- Utilities ---------- */

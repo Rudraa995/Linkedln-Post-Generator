@@ -86,7 +86,7 @@ USER PROFILE (use ONLY this information — never invent details):
 - Current Role: ${input.profile.currentRole || 'Not provided'}
 - Education: ${input.profile.education || 'Not provided'}
 - College/University: ${input.profile.collegeUniversity || 'Not provided'}
-- Skills: ${input.profile.skills?.join(', ') || 'None provided'}
+- Skills: ${input.profile.skills?.map((s: any) => (typeof s === 'string' ? s : s.name)).join(', ') || 'None provided'}
 - Work Experience: ${JSON.stringify(input.profile.workExperience || [])}
 - Internship Experience: ${JSON.stringify(input.profile.internshipExperience || [])}
 - Projects: ${JSON.stringify(input.profile.projects || [])}
@@ -125,7 +125,8 @@ WRITING RULES:
 6. Generate relevant hashtags (3-5) only if enabled.
 7. Never invent statistics, achievements, or experience.
 8. Use readable formatting with short paragraphs and line breaks.
-9. If language is Hindi or Gujarati, write in that language using English script (Hinglish / Gujarati-English mix).
+9. Format key points, takeaways, steps, or lists as bullet points using "•" or numbered points (1., 2., 3.) on separate lines.
+10. If language is Hindi or Gujarati, write in that language using English script (Hinglish / Gujarati-English mix).
 10. If emoji preference is "No Emojis", use zero emojis. If "Minimal", use 1-2. If "Creative", use sparingly for emphasis only.
 
 OUTPUT FORMAT: Return ONLY a valid JSON object with exactly these keys:
@@ -383,7 +384,7 @@ USER PROFILE (use ONLY this information — never invent details):
 - Name: ${input.profile.fullName || 'Not provided'}
 - Headline: ${input.profile.headline || 'Not provided'}
 - Current Role: ${input.profile.currentRole || 'Not provided'}
-- Skills: ${input.profile.skills?.join(', ') || 'None provided'}
+- Skills: ${input.profile.skills?.map((s: any) => (typeof s === 'string' ? s : s.name)).join(', ') || 'None provided'}
 - Projects: ${JSON.stringify(input.profile.projects || [])}
 `
     : ''

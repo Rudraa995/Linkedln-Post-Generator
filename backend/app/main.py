@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 load_dotenv()
 
 # Import routers
-from app.routers import post, url, image, calendar, posts
+from app.routers import post, url, image, calendar, posts, chat
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -59,6 +59,7 @@ app.include_router(url.router, prefix="/api", tags=["URL to Post"])
 app.include_router(image.router, prefix="/api", tags=["Image Generation"])
 app.include_router(calendar.router, prefix="/api", tags=["Calendar"])
 app.include_router(posts.router, prefix="/api", tags=["Posts"])
+app.include_router(chat.router, prefix="/api", tags=["Chat"])
 
 # Global exception handler
 @app.exception_handler(Exception)

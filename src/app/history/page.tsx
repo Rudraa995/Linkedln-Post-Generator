@@ -84,16 +84,21 @@ export default function HistoryPage() {
  <Card>
  <CardContent className="p-5">
  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
- <div className="relative flex-1">
+ <div className="flex-1">
+ <label className="text-xs font-medium text-muted-foreground block mb-1">
+ Search
+ </label>
+ <div className="relative">
  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
- <Search className="w-4 h-4" />
+  <Search className="w-4 h-4" />
  </div>
  <Input
- placeholder="Search by topic..."
- value={search}
- onChange={(e) => setSearch(e.target.value)}
- className="pl-10"
+  placeholder="Search by topic..."
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  className="pl-10"
  />
+ </div>
  </div>
  <div className="flex-1">
  <label className="text-xs font-medium text-muted-foreground block mb-1">

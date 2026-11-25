@@ -143,13 +143,28 @@ export default function CalendarPage() {
  return (
  <div className="space-y-4">
  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
- <div className="flex items-center gap-3">
+ <div className="flex items-center gap-2 flex-wrap">
  <Button variant="outline" size="sm" onClick={prevMonth}>
  <ChevronLeft className="w-4 h-4" />
  </Button>
- <h1 className="text-2xl font-semibold tracking-tight">
- {MONTHS[month]} {year}
- </h1>
+ <select
+ value={month}
+ onChange={(e) => setCurrentDate(new Date(year, Number(e.target.value), 1))}
+ className="rounded-md border border-input bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+ >
+ {MONTHS.map((m, i) => (
+ <option key={m} value={i}>{m}</option>
+ ))}
+ </select>
+ <select
+ value={year}
+ onChange={(e) => setCurrentDate(new Date(Number(e.target.value), month, 1))}
+ className="rounded-md border border-input bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+ >
+ {Array.from({ length: 16 }, (_, i) => 2020 + i).map((y) => (
+ <option key={y} value={y}>{y}</option>
+ ))}
+ </select>
  <Button variant="outline" size="sm" onClick={nextMonth}>
  <ChevronRight className="w-4 h-4" />
  </Button>
@@ -217,7 +232,7 @@ export default function CalendarPage() {
  {DAYS.map((day) => (
  <div
  key={day}
- className="flex items-center justify-center py-3 text-xs font-medium text-muted-foreground border-b border-border bg-muted/50"
+ className="flex items-center justify-center py-2 text-[10px] font-medium text-muted-foreground border-b border-border bg-muted/50"
  >
  {day}
  </div>
@@ -225,19 +240,19 @@ export default function CalendarPage() {
  {dayCells.map((cell, i) => (
  <div
  key={i}
- className="aspect-[1.1] border border-border/50 p-2 cursor-pointer hover:bg-accent "
+ className="aspect-[1.4] border border-border/50 p-1 cursor-pointer hover:bg-accent "
  onClick={cell ? () => handleDateClick(cell) : undefined}
  >
  {cell && (
  <div className="flex flex-col h-full">
- <div className="text-xs font-medium text-foreground">
+ <div className="text-[10px] font-medium text-foreground">
  {cell.getDate()}
  </div>
  <div className="flex-1 flex items-end gap-1 pt-1">
  {getEventsForDate(cell).map((ev) => (
  <div
  key={ev.id}
- className={`flex items-center gap-1 px-1.5 py-0.5 rounded-xs text-[10px] font-medium border border-current ${STATUS_COLORS[ev.status]}`}
+ className={`flex items-center gap-1 px-1 py-0 rounded-xs text-[9px] font-medium border border-current ${STATUS_COLORS[ev.status]}`}
  >
  {ev.title.slice(0, 12)}{ev.title.length > 12 ? '…' : ''}
  </div>

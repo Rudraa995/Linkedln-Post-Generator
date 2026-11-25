@@ -75,7 +75,7 @@ USER PROFILE (use ONLY this information — never invent details):
 - Current Role: {profile.get('currentRole', 'Not provided')}
 - Education: {profile.get('education', 'Not provided')}
 - College/University: {profile.get('collegeUniversity', 'Not provided')}
-- Skills: {', '.join(profile.get('skills', [])) if isinstance(profile.get('skills'), list) else profile.get('skills', 'None provided')}
+- Skills: {', '.join((s.get('name', s) if isinstance(s, dict) else str(s) for s in profile.get('skills', []))) if isinstance(profile.get('skills'), list) else profile.get('skills', 'None provided')}
 - Work Experience: {profile.get('workExperience', [])}
 - Internship Experience: {profile.get('internshipExperience', [])}
 - Projects: {profile.get('projects', [])}
@@ -112,7 +112,8 @@ WRITING RULES:
 6. Generate relevant hashtags (3-5) only if enabled.
 7. Never invent statistics, achievements, or experience.
 8. Use readable formatting with short paragraphs and line breaks.
-9. If language is Hindi or Gujarati, write in that language using English script (Hinglish / Gujarati-English mix).
+9. Format key points, takeaways, steps, or lists as bullet points using "•" or numbered points (1., 2., 3.) on separate lines.
+10. If language is Hindi or Gujarati, write in that language using English script (Hinglish / Gujarati-English mix).
 10. If emoji preference is "No Emojis", use zero emojis. If "Minimal", use 1-2. If "Creative", use sparingly for emphasis only.
 
 OUTPUT FORMAT: Return ONLY a valid JSON object with exactly these keys:
@@ -135,23 +136,26 @@ def generate_linkedin_post(input_data: dict) -> dict:
         return _mock_post(input_data)
     system_prompt = build_system_prompt(input_data)
 
-    try:
-        completion = client.chat.completions.create(
-            model=OPENROUTER_MODEL,
-            temperature=0.7,
-            max_tokens=1000,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": "Generate the LinkedIn post now. Return only valid JSON."},
-            ],
-        )
-    except Exception:
-        return _mock_post(input_data)
-
-    raw = completion.choices[0].message.content
+    raw = None
+    for _ in range(2):
+        try:
+            completion = client.chat.completions.create(
+                model=OPENROUTER_MODEL,
+                temperature=0.7,
+                max_tokens=1000,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": "Generate the LinkedIn post now. Return only valid JSON."},
+                ],
+            )
+            raw = completion.choices[0].message.content if completion.choices else None
+            if raw:
+                break
+        except Exception:
+            return _mock_post(input_data)
     if not raw:
-        raise ValueError("OpenRouter returned an empty response.")
+        return _mock_post(input_data)
 
     try:
         parsed = json.loads(raw)
@@ -304,7 +308,7 @@ USER PROFILE (use ONLY this information — never invent details):
 - Name: {profile.get('fullName', 'Not provided')}
 - Headline: {profile.get('headline', 'Not provided')}
 - Current Role: {profile.get('currentRole', 'Not provided')}
-- Skills: {', '.join(profile.get('skills', [])) if isinstance(profile.get('skills'), list) else profile.get('skills', 'None provided')}
+- Skills: {', '.join((s.get('name', s) if isinstance(s, dict) else str(s) for s in profile.get('skills', []))) if isinstance(profile.get('skills'), list) else profile.get('skills', 'None provided')}
 - Projects: {profile.get('projects', [])}
 """
 
@@ -348,23 +352,26 @@ OUTPUT FORMAT: Return ONLY a valid JSON object with exactly these keys:
   "cta": "string"
 }}"""
 
-    try:
-        completion = client.chat.completions.create(
-            model=OPENROUTER_MODEL,
-            temperature=0.7,
-            max_tokens=1200,
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": "Generate the LinkedIn post now. Return only valid JSON."},
-            ],
-        )
-    except Exception:
-        return _mock_post(input_data)
-
-    raw = completion.choices[0].message.content
+    raw = None
+    for _ in range(2):
+        try:
+            completion = client.chat.completions.create(
+                model=OPENROUTER_MODEL,
+                temperature=0.7,
+                max_tokens=1200,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": "Generate the LinkedIn post now. Return only valid JSON."},
+                ],
+            )
+            raw = completion.choices[0].message.content if completion.choices else None
+            if raw:
+                break
+        except Exception:
+            return _mock_post(input_data)
     if not raw:
-        raise ValueError("OpenRouter returned an empty response.")
+        return _mock_post(input_data)
 
     try:
         parsed = json.loads(raw)
@@ -411,3 +418,48 @@ def generate_image_prompt(post_content: str, style: str) -> str:
     )
 
     return completion.choices[0].message.content or ""
+
+
+def chat_with_ai(messages, context=None):
+    """Simple conversational chat via OpenRouter."""
+    if not _is_configured():
+        last = ""
+        if messages and isinstance(messages[-1], dict):
+            last = messages[-1].get("content", "") or ""
+        return (
+            "I am your LinkedIn AI assistant. (Demo mode - no API key configured.) "
+            "You asked: " + (last[:120] if last else "hello") + ". "
+            "Set OPENROUTER_API_KEY in backend/.env for real answers."
+        )
+
+    client = get_client()
+    system_content = (
+        "You are a helpful AI assistant inside the LinkedIn Content Creator app. "
+        "Help users with LinkedIn post ideas, writing tips, hashtags, and using the app. "
+        "Be concise, friendly, and practical. "
+        "You are given APP DATA CONTEXT with the user's current project data. "
+        "When the user asks about any fact or count that appears in that context, you MUST answer using only that data. "
+        "Do not invent UI steps or features. "
+        "Do not use markdown asterisks, stars, or bold markers. Use plain text only. "
+        "For total posts generated, reply exactly: total post generated [username] is N. "
+        "For drafts, reply: drafts [username] is N. "
+        "If the user asks about another user or someone else's data, refuse and say you can only access the currently logged-in user's information. "
+    )
+    if context:
+        system_content += "\n\nAPP DATA CONTEXT:\n" + str(context)
+    system = {
+        "role": "system",
+        "content": system_content,
+    }
+    choice = ""
+    for _ in range(2):
+        completion = client.chat.completions.create(
+            model=OPENROUTER_MODEL,
+            temperature=0.0,
+            max_tokens=500,
+            messages=[system] + (messages or []),
+        )
+        choice = completion.choices[0].message.content if completion.choices else ""
+        if choice:
+            break
+    return choice or "I'm sorry, I couldn't generate a response. Please try again."

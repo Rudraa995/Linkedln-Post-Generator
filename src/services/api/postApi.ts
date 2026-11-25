@@ -32,11 +32,13 @@ export async function generatePost(params: GeneratePostParams): Promise<LinkedIn
 }
 
 export interface GeneratedPostFromUrl {
+  id?: string
   hook: string
   mainContent: string
   conclusion: string
   hashtags: string[]
   cta: string
+  content?: string
   fullContent: string
 }
 

@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import {
  LayoutDashboard,
  Edit3,
- User,
  Link as LinkIcon,
  Image,
  Calendar,
@@ -26,7 +25,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
  { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
  { title: 'Create Post', href: '/create-post', icon: Edit3 },
- { title: 'AI Profile', href: '/profile', icon: User },
+
  { title: 'URL to Post', href: '/url-to-post', icon: LinkIcon },
  { title: 'Image Studio', href: '/image-studio', icon: Image },
  { title: 'Content Calendar', href: '/calendar', icon: Calendar },

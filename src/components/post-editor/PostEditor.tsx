@@ -10,6 +10,7 @@ import LinkedInPreview from '@/components/post-editor/LinkedInPreview'
 import { getPosts, savePost, deletePost, updatePost } from '@/lib/storage'
 import { rewritePost, regenerateSection, generateHashtags } from '@/services/api/postApi'
 import { type LinkedInPost } from '@/types'
+import { copyToClipboard } from '@/lib/utils'
 
 interface PostEditorProps {
  initialPost?: LinkedInPost
@@ -178,7 +179,7 @@ export default function PostEditor({
  }, [content, post])
 
  const handleCopy = useCallback(() => {
- navigator.clipboard.writeText(content)
+ copyToClipboard(content)
  }, [content])
 
  const handleDownload = useCallback(() => {
